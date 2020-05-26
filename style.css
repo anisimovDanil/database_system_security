@@ -1,0 +1,87 @@
+*{
+	margin: 0;
+	padding: 0;
+}
+header{
+	display: flex;
+	justify-content: space-between;
+	margin: 50px;
+}
+.main-title{
+	margin-left: 23%;
+}
+a{
+	color: #000;
+	cursor: default;
+	text-decoration: none;
+}
+li{
+	list-style-type: none;
+}
+.enter-and-sign_up{
+	display: flex;
+	flex-direction: row;
+	margin-right: 23%;
+	margin-top: 15px;
+}
+.enter-and-sign_up a{
+	margin-right: 25px; 
+}
+.enter-and-sign_up a:last-child{
+	margin-right: 0;
+}
+.products-grid{
+	list-style-type: none;
+	display: flex;
+	margin: 2% 25%;
+	margin-top: 0;
+}
+.products-grid-info{
+	margin-left: 2%;
+}
+.add-cart-style-grid {
+	margin: 10px 0;
+}
+.add-cart-style-grid a{
+	padding: 5px;
+	background-color: yellowgreen;
+	color: white;
+}
+#block-top-auth {
+    width: 140%;
+    height: 44%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+}
+.corner{
+    width: 170px;
+    height: 100px;
+    display: flex;
+    padding: 15px;
+    border: 3px solid yellowgreen;
+    border-radius: 10px;
+    position: absolute;
+    top: 0;	
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    background: #fff;
+}
+
+#block-top-auth:target {
+	display: block;
+}
+button{
+	margin-top: 5px;
+	padding: 0 11px;
+}
+button[type=submit]{
+	padding: 0 16px;
+}
+.close{
+	margin-left: 12px;
+
+}

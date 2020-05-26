@@ -1,0 +1,36 @@
+*{
+	margin: 0;
+	padding: 0;
+}
+li{
+	list-style-type: none;
+}
+.position-form{
+	display: flex;
+	justify-content: center;
+	margin-top: 15%;
+}
+.main-form{
+	display: flex;
+	flex-direction: column;
+	background-color: #beffca;
+	padding: 50px 100px;
+	margin: auto;
+}
+.main-points label{
+	margin-right: 20px;
+}
+
+input[type=text]{
+	width: 25vmin;
+}
+button[type=submit],
+input[type=submit]{
+	padding: 5px 20px;
+	background-color: #d1f059;
+	border: 1px solid black;
+	margin-top: 10px;
+}
+input[type=checkbox]{
+	margin-top: 10px;
+}
