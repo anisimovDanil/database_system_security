@@ -76,24 +76,34 @@
 <!-- ========================== -->
 <?php 
 	session_start();
-	include("../include/db_connect.php");
+	require_once '../include/db_connect.php';
 
 	if(isset($_POST['submit'])){
-		$fio = mysqli_real_escape_string($link, trim($_POST['reg_fio']));
-		$username = mysqli_real_escape_string($link, trim($_POST['reg_username']));
-		$pass = mysqli_real_escape_string($link, trim($_POST['reg_pass']));
-		$address = mysqli_real_escape_string($link, trim($_POST['reg_address']));
-		$b_day = mysqli_real_escape_string($link, trim($_POST['reg_birthday_date']));
-		$about = mysqli_real_escape_string($link, trim($_POST['reg_about']));
-		$mob_num = mysqli_real_escape_string($link, trim($_POST['reg_number']));
-		$company = mysqli_real_escape_string($link, trim($_POST['reg_company']));
-		$card_number = mysqli_real_escape_string($link, trim($_POST['reg_card_number']));
+		$fio = htmlspecialchars( trim($_POST['reg_fio']) );
+		$username = htmlspecialchars( trim($_POST['reg_username']) );
+		$pass = htmlspecialchars( trim($_POST['reg_pass']) );
+		$address = htmlspecialchars( trim($_POST['reg_address']) );
+		$b_day = htmlspecialchars( trim($_POST['reg_birthday_date']) );
+		$about = htmlspecialchars( trim($_POST['reg_about']) );
+		$mob_num = htmlspecialchars( trim($_POST['reg_number']) );
+		$company = htmlspecialchars( trim($_POST['reg_company']) );
+		$card_number = htmlspecialchars( trim($_POST['reg_card_number']) );
 
 
 		if(!empty($username) && !empty($pass) && !empty($fio) && !empty($address) && !empty($mob_num)) {
-			$data = mysqli_query($link, " SELECT * FROM people_table WHERE username = '$username' ");
 
-			if(mysqli_num_rows($data) == 0) {
+			$data = " SELECT * FROM people_table WHERE username = :username ";
+			$argumnts_data = [':username' => $username];
+			$stmt = $link->prepare($data);
+			$stmt->execute($argumnts_data);
+
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			print_r($row['COUNT(username)']);
+
+			if(count($row) > 0){
+				print_r('Данный ник уже существует!');
+			}
+			else{
 
 				$pass = md5($pass);
 
@@ -101,17 +111,31 @@
 				$id = md5($id);
 
 
-				mysqli_query($link, " INSERT INTO more_people_info (user_id, birthday_date, about, phone_number, company) VALUES ('$id', '$b_day', '$about', '$mob_num', '$company') ");
+				$add_more_people_info = ' INSERT INTO more_people_info (user_id, birthday_date, about, phone_number, company) VALUES (:id, :b_day, :about, :mob_num, :company)';
+				$arguments_m_p_i = [':id' => $id, ':b_day' => $b_day, ':about' => $about, ':mob_num' => $mob_num, ':company' => $company];
+				$stmt = $link->prepare($add_more_people_info);
+				$stmt->execute($arguments_m_p_i);
 				
-				mysqli_query($link, " INSERT INTO yet_people_info (user_id, card_number) VALUES ('$id', '$card_number') ");
 
-				mysqli_query($link," INSERT INTO people_table (user_id, username, email, password, fio, address, role) VALUES ('$id', '$username', '$username', '$pass', '$fio', '$address', 'user') ");
+
+				$add_yet_people_info = ' INSERT INTO yet_people_info (user_id, card_number) VALUES (:id, :card_number)';
+				$arguments_y_p_i = [':id' => $id, ':card_number' => $card_number];
+				$stmt = $link->prepare($add_yet_people_info);
+				$stmt->execute($arguments_y_p_i);
+
+				
+
+				$add_people_table = ' INSERT INTO people_table (user_id, username, email, password, fio, address, role) VALUES (:id, :username, :email, :pass, :fio, :address, :user) ';
+				print_r($add_people_table."<br />");
+				$arguments_p_t = [':id' => $id, ':username' => $username, ':email' => $username, ':pass' => $pass,  ':fio' => $fio, ':address' => $address, ':user' => 'user'];
+				print_r($arguments_p_t);
+				$stmt = $link->prepare($add_people_table);
+				$stmt->execute($arguments_p_t);
+
 
 				echo '<p>Регистрация прошла успешно! Через <span id="time"></span> секунд вы будете перенаправлены на главную страницу.</p>';
-				mysqli_close($link);
+				$link = null;
 			}
-
-			else echo 'Данный ник уже существует';
 		}
 	}
 ?>
