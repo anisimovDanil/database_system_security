@@ -11,13 +11,10 @@ $id = $_SESSION['session_user_id'];
 function update_data($id, $name_db, $value_cell_db){
 	require_once '../include/db_connect.php';
 	$new_data = htmlspecialchars( trim( $_POST[$value_cell_db] ) );
-	//print_r($new_data);
 	$datas = " SELECT * FROM $name_db WHERE user_id = '$id' ";
-	//print_r($datas);
 	$stmt = $link->prepare($datas);
 	$stmt->execute();
 	$search_data = $stmt->fetch(PDO::FETCH_OBJ);
-	//print_r($search_data);
 
 	if($search_data){
 		if($search_data->user_id == $id) {

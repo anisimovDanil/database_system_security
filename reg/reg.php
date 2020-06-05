@@ -98,7 +98,7 @@
 			$stmt->execute($argumnts_data);
 
 			$row = $stmt->fetch(PDO::FETCH_OBJ);
-			
+
 
 			if ($row) 
 			{
@@ -112,7 +112,6 @@
 
 				$id = $username . " " . $address;
 				$id = md5($id);
-				print_r($id);
 
 				$add_yet_people_info = ' INSERT INTO yet_people_info (user_id, card_number) VALUES (:id, :card_number) ';
 				$arguments_y_p_i = [':id' => $id, ':card_number' => $card_number];
@@ -120,16 +119,13 @@
 				$stmt->execute($arguments_y_p_i);
 
 				$add_people_table = ' INSERT INTO people_table (user_id, username, email, password, fio, address, role) VALUES (:id, :username, :email, :pass, :fio, :address, :user) ';
-				print_r($add_people_table."<br />");
 				$arguments_p_t = [':id' => $id, ':username' => $username, ':email' => $username, ':pass' => $pass,  ':fio' => $fio, ':address' => $address, ':user' => 'user'];
-				print_r($arguments_p_t);
 				$stmt = $link->prepare($add_people_table);
 				$stmt->execute($arguments_p_t);
 
 
 				$add_more_people_info = ' INSERT INTO more_people_info (user_id, birthday_date, about, phone_number, company) VALUES (:id, :b_day, :about, :mob_num, :company) ';
 				$arguments_m_p_i = [':id' => $id, ':b_day' => $b_day, ':about' => $about, ':mob_num' => $mob_num, ':company' => $company];
-				print_r($arguments_m_p_i);
 				$stmt = $link->prepare($add_more_people_info);
 				$stmt->execute($arguments_m_p_i);
 

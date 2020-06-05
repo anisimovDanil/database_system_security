@@ -137,8 +137,7 @@
 	$stmt->execute();
 
 	$input_user = $stmt->fetch(PDO::FETCH_OBJ);
-	//print_r($input_user);
-	//print_r($_SESSION['session_role']);
+
 
 	if(($input_user == true || $_SESSION['session_username'] != null) && $_SESSION['session_role'] == 'user') {
 		echo '
@@ -197,7 +196,6 @@
             		$height = intval($ratio * $height);
             	}
             	else{
-            		//echo "The image indicated in the B / D is not displayed, because it is not in the folder";
             		$img_path = "./images/no_photo.jpg";
             		$width = 127;
             		$height = 200;
