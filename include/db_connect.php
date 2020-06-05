@@ -1,8 +1,23 @@
 <?php
-	$link = mysqli_connect('localhost', 'root', 'root', 'db_shop');
-	if (mysqli_connect_error()) {
-	 die('Ошибка подключения (' . mysqli_connect_errno() . ') '
-	  . mysqli_connect_error());
+	$host = 'localhost';
+	$db_title = 'db_shop';
+	$db_user = 'user';//	admin   |	user
+	$db_pass = 'user';//	123456	|	user
+	$charset = 'utf8';
+	$options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
+
+	try {
+		$link = new PDO("mysql:host=$host;dbname=$db_title;charset=$charset", $db_user, $db_pass, $options);
 	} 
-	mysqli_set_charset($link, "UTF-8");
+	catch (PDOException $e) {
+		die ('Подключение не удалось!<br />' . $e->getMessage());
+	}
+
+	/*$result = $link->query('SELECT * FROM table_products');//db_shop.
+
+
+	while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+		print_r($row['product_name'] . "<br/>");
+	}*/
+
 ?>

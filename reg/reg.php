@@ -16,7 +16,8 @@
 			    var login = $('#reg_username').val ();
 			    var pass = $('#reg_pass').val ();
 			    var address = $('#reg_address').val ();
-			    var number = $('#reg_number').val ();
+			    var b_day = $('#reg_birthday_date').val ();
+			    var m_number = $('#reg_number').val ();
 			    var fail = "";
 
 			    if (name.length < 3)
@@ -25,12 +26,11 @@
 			    	fail = "Введен некорректный E-mail, в логине должны содержаться @ и .";
 			    else if (pass.length < 5) 
 			    	fail = "Пароль не менее 5 символов";
-			    else if (address.length < 0) 
-			    	fail = "Заполните поле адреса";
-			    else if (number.length < 9) 
+			    else if (m_number.length < 9) 
 			    	fail = "Номер телефона должен быть из менее чем из 9 цифр";
-
-
+			    else if (b_day.length == 0 || b_day.length < 10 || b.day.split ('-').length - 1 == 0) 
+			    	fail = "Заполните поле 'День рождения' в следующей форме: гггг-мм-дд";
+			  
 			    if (fail != "") {
 			    	alert(fail);
 			    	return false;
@@ -56,7 +56,7 @@
 				<label>Адрес</label>
 				<li><input type="text" name="reg_address" id="reg_address"></li>
 				<label>Дата рождения</label>
-				<li><input type="text" name="reg_birthday_date" id="birthday_date"></li>
+				<li><input type="text" name="reg_birthday_date" id="reg_birthday_date"></li>
 				<label>О себе</label>
 				<li><input type="text" name="reg_about" id="reg_about"></li>
 				<label>Номер телефона</label>
@@ -90,18 +90,21 @@
 		$card_number = htmlspecialchars( trim($_POST['reg_card_number']) );
 
 
-		if(!empty($username) && !empty($pass) && !empty($fio) && !empty($address) && !empty($mob_num)) {
+		if(!empty($username) && !empty($pass) && !empty($fio) && !empty($mob_num) && !empty($b_day)) {
 
 			$data = " SELECT * FROM people_table WHERE username = :username ";
 			$argumnts_data = [':username' => $username];
 			$stmt = $link->prepare($data);
 			$stmt->execute($argumnts_data);
 
-			$row = $stmt->fetch(PDO::FETCH_ASSOC);
-			print_r($row['COUNT(username)']);
+			$row = $stmt->fetch(PDO::FETCH_OBJ);
+			
 
-			if(count($row) > 0){
-				print_r('Данный ник уже существует!');
+			if ($row) 
+			{
+				if ($row->username == $username){
+					print_r('Данный ник уже существует!');
+				}
 			}
 			else{
 
@@ -109,21 +112,12 @@
 
 				$id = $username . " " . $address;
 				$id = md5($id);
+				print_r($id);
 
-
-				$add_more_people_info = ' INSERT INTO more_people_info (user_id, birthday_date, about, phone_number, company) VALUES (:id, :b_day, :about, :mob_num, :company)';
-				$arguments_m_p_i = [':id' => $id, ':b_day' => $b_day, ':about' => $about, ':mob_num' => $mob_num, ':company' => $company];
-				$stmt = $link->prepare($add_more_people_info);
-				$stmt->execute($arguments_m_p_i);
-				
-
-
-				$add_yet_people_info = ' INSERT INTO yet_people_info (user_id, card_number) VALUES (:id, :card_number)';
+				$add_yet_people_info = ' INSERT INTO yet_people_info (user_id, card_number) VALUES (:id, :card_number) ';
 				$arguments_y_p_i = [':id' => $id, ':card_number' => $card_number];
 				$stmt = $link->prepare($add_yet_people_info);
 				$stmt->execute($arguments_y_p_i);
-
-				
 
 				$add_people_table = ' INSERT INTO people_table (user_id, username, email, password, fio, address, role) VALUES (:id, :username, :email, :pass, :fio, :address, :user) ';
 				print_r($add_people_table."<br />");
@@ -132,6 +126,12 @@
 				$stmt = $link->prepare($add_people_table);
 				$stmt->execute($arguments_p_t);
 
+
+				$add_more_people_info = ' INSERT INTO more_people_info (user_id, birthday_date, about, phone_number, company) VALUES (:id, :b_day, :about, :mob_num, :company) ';
+				$arguments_m_p_i = [':id' => $id, ':b_day' => $b_day, ':about' => $about, ':mob_num' => $mob_num, ':company' => $company];
+				print_r($arguments_m_p_i);
+				$stmt = $link->prepare($add_more_people_info);
+				$stmt->execute($arguments_m_p_i);
 
 				echo '<p>Регистрация прошла успешно! Через <span id="time"></span> секунд вы будете перенаправлены на главную страницу.</p>';
 				$link = null;

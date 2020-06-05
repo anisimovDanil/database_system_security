@@ -1,53 +1,76 @@
 <?php
 session_start();
-include("../include/db_connect.php"); 
+
 if(!isset($_SESSION["session_fio"])):
-	header("Location: http://localhost:8888/SSBD/admin/login.php");
+	header("Location: http://localhost:8888/SSBD");
 	session_destroy();
 else:
 
-$users_id = $_SESSION['session_user_id'];
+$id = $_SESSION['session_user_id'];
 
-function update_data($users_id, $name_db, $value_cell_db){
-	include("../include/db_connect.php"); 
-	$new_data = mysqli_real_escape_string($link, $_POST[$value_cell_db]);
-	$data = mysqli_query($link, " SELECT * FROM " . $name_db . " WHERE user_id = '$users_id' ");
+function update_data($id, $name_db, $value_cell_db){
+	require_once '../include/db_connect.php';
+	$new_data = htmlspecialchars( trim( $_POST[$value_cell_db] ) );
+	//print_r($new_data);
+	$datas = " SELECT * FROM $name_db WHERE user_id = '$id' ";
+	//print_r($datas);
+	$stmt = $link->prepare($datas);
+	$stmt->execute();
+	$search_data = $stmt->fetch(PDO::FETCH_OBJ);
+	//print_r($search_data);
 
- 	if(mysqli_num_rows($data) == 1) {
-		mysqli_query($link, " UPDATE " . $name_db . " SET " . $value_cell_db . " = '$new_data' WHERE user_id = '$users_id' ");
-			if($value_cell_db == 'username')
-				mysqli_query($link, " UPDATE " . $name_db . " SET email = '$new_data' WHERE user_id = '$users_id' ");
-        echo "<span style='color:blue;'>Данные обновлены</span>";
- 	}
+	if($search_data){
+		if($search_data->user_id == $id) {
 
+	 		if($value_cell_db == 'password'){
+	 			$update_pass = " UPDATE $name_db  SET $value_cell_db  = :new_pass WHERE user_id = '$id' ";
+				$stmt = $link->prepare($update_pass);
+				$stmt->execute([':new_pass' => md5($new_data)]);
+	 		}
+	 		else if($value_cell_db == 'username'){
+				$update_username = " UPDATE $name_db SET $value_cell_db = :new_username, email = :new_email WHERE user_id = '$id' ";
+				$new_username = [':new_username' => $new_data, ':new_email' => $new_data];
+				$stmt = $link->prepare($update_username);
+				$stmt->execute($new_username);
+			}
+	 		else{
+	 			$update_data = " UPDATE $name_db SET $value_cell_db = :new_data WHERE user_id = '$id' ";
+	 			$data = [':new_data' => $new_data];
+				$stmt = $link->prepare($update_data);
+				$stmt->execute($data);
+			}
+	  	echo "<span style='color:blue;'>Данные обновлены</span>";
+	  }
+	}
 }
 
 if(isset($_POST['password_button']))
-	update_data($users_id, 'people_table', 'password');
+	update_data($id, 'people_table', 'password');
 
 if(isset($_POST['username_button']))
-	update_data($users_id, 'people_table', 'username');
+	update_data($id, 'people_table', 'username');
 
-if(isset($_POST['fio_button']))
-	update_data($users_id, 'people_table', 'fio');
+if(isset($_POST['fio_button'])){
+	update_data($id, 'people_table', 'fio');
+}
 
 if(isset($_POST['address_button']))
-	update_data($users_id, 'people_table', 'address');
+	update_data($id, 'people_table', 'address');
 
 if(isset($_POST['birthday_date_button']))
-	update_data($users_id, 'more_people_info', 'birthday_date');
+	update_data($id, 'more_people_info', 'birthday_date');
 
 if(isset($_POST['about_button']))
-	update_data($users_id, 'more_people_info', 'about');
+	update_data($id, 'more_people_info', 'about');
 
 if(isset($_POST['phone_number_button']))
-	update_data($users_id, 'more_people_info', 'phone_number');
+	update_data($id, 'more_people_info', 'phone_number');
 
 if(isset($_POST['company_button']))
-	update_data($users_id, 'more_people_info', 'company');
+	update_data($id, 'more_people_info', 'company');
 
 if(isset($_POST['card_number_button']))
-	update_data($users_id, 'yet_people_info', 'card_number');
+	update_data($id, 'yet_people_info', 'card_number');
 
 mysqli_close($link);
 endif; 
@@ -90,7 +113,7 @@ endif;
 	<div class="welcome">
 		<h2>Добро пожаловать, <span><?php echo $_SESSION['session_fio'];?>! </span></h2>
 		<p><a href="http://localhost:8888/SSBD/index.php">На главную</a></p>
-	  	<p><a href="../exit.php">Выйти</a></p>
+	  	<p><a href="../pdo_exit.php">Выйти</a></p>
 	</div>
 	<form method='POST'>
 		<div class="change"><p>Изменить пароль</p></div>

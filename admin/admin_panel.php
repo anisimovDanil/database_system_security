@@ -23,7 +23,7 @@
 		<button class = "open_users">Пользователи</button>
 		<button class = "shop" type = "submit" name = "shop">Магазин</button>
 		<button type="submit" name="main_page"><a href="http://localhost:8888/SSBD/index.php">На главную</a></button>
-		<button type = "submit" name = "exit"><a href="../exit.php">Выход</a></button>
+		<button type = "submit" name = "exit"><a href="../pdo_exit.php">Выход</a></button>
 	</div>
 
 	<script>
@@ -63,8 +63,12 @@
 	<div class = "users_panel" id = "users_panel" style="display: none;">
 		<?php
 			session_start();
-			include("../include/db_connect.php");
 
+			$link = mysqli_connect('localhost', 'admin', '123456', 'db_shop');
+			if (mysqli_connect_error()) {
+				die('Ошибка подключения (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
+			} 
+			mysqli_set_charset($link, "UTF-8");
 
 			// УДАЛЕНИЕ ДАННЫХ О ПОЛЬЗОВАТЕЛЕ ИЗ БАЗЫ ДАННЫХ
 			if(isset($_POST['delete_user_button'])) {
@@ -271,7 +275,7 @@
 
 		// ФУНКУИЯ ДЛЯ ИЗМЕНЕНИЯ ИНФОРМАЦИИ О КНИГЕ
 		function update_data($input_title, $input_edition, $input_year, $input_new_data, $table_1, $table_2, $table_3, $value_cell_db){
-			include("../include/db_connect.php"); 
+			include("db_connect.php"); 
 
 			$title = mysqli_real_escape_string($link, trim($_POST[$input_title]));
 			$edition = mysqli_real_escape_string($link, trim($_POST[$input_edition]));
